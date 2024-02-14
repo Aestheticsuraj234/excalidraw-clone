@@ -28,22 +28,17 @@ export const Item = ({ id, name, imageUrl }: ItemProps) => {
 
   return (
     <div className="aspect-square relative">
-      <Hint
-      label={name}
-      side="right"
-      align="start"
-      sideOffset={18}
-      >
-      <Image
-        fill
-        src={imageUrl}
-        alt={name}
-        onClick={onClick}
-        className={cn(
-          "rounded-md cursor-pointer opacity-75 hover:opacity100 transition",
-          isActive && "opacity-100"
-        )}
-      />
+      <Hint label={name} side="right" align="start" sideOffset={18}>
+        <Image
+          fill
+          src={imageUrl}
+          alt={name}
+          onClick={onClick}
+          className={cn(
+            "rounded-md cursor-pointer opacity-75 hover:opacity100 transition",
+            isActive && "opacity-100"
+          )}
+        />
       </Hint>
     </div>
   );
