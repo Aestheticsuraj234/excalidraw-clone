@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 import { ConvexCLientProvider } from "@/providers/convex-client-provider";
 const inter = Inter({ subsets: ["latin"] });
+
 
 export const metadata: Metadata = {
   title: "Excalidraw Next.js App",
@@ -17,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ConvexCLientProvider>{children}</ConvexCLientProvider>
+        <ConvexCLientProvider>
+          <Toaster />
+          {children}
+          </ConvexCLientProvider>
       </body>
     </html>
   );
