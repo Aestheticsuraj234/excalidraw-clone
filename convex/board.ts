@@ -37,3 +37,43 @@ export const create = mutation({
     return board;
   },
 });
+
+export const remove = mutation({
+  args: { id: v.id("boards") },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    // todo:Later check to delete only if the user is the author of the board
+
+    await ctx.db.delete(args.id);
+  },
+});
+
+export const update = mutation({
+  args: { id: v.id("boards"), title: v.string() },
+  handler: async (ctx, args) => {
+    const title = args.title.trim();
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    if (!title) {
+      throw new Error("Title cannot be empty");
+    }
+
+    if (title.length > 50) {
+      throw new Error("Title cannot be more than 50 characters");
+    }
+
+    const board = await ctx.db.patch(args.id, { title: args.title });
+
+    return board;
+  },
+});
+   
