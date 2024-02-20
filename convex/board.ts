@@ -14,7 +14,6 @@ const images = [
   "/placeholders/10.svg",
 ];
 
-
 export const create = mutation({
   args: {
     orgId: v.string(),
@@ -51,13 +50,15 @@ export const remove = mutation({
     const userId = identity.subject;
     const existingFavorite = await ctx.db
       .query("userFavorites")
-      .withIndex("by_user_board", (q) => q.eq("userId", userId).eq("boardId", args.id))
+      .withIndex("by_user_board", (q) =>
+        q.eq("userId", userId).eq("boardId", args.id)
+      )
       .unique();
 
     if (existingFavorite) {
       await ctx.db.delete(existingFavorite._id);
     }
-    
+
     await ctx.db.delete(args.id);
   },
 });
@@ -105,11 +106,8 @@ export const favorite = mutation({
 
     const existingFavorite = await ctx.db
       .query("userFavorites")
-      .withIndex("by_user_board_org", (q) =>
-        q
-          .eq("userId", userId)
-          .eq("boardId", board._id)
-          .eq("orgId", args.orgId)
+      .withIndex("by_user_board", (q) =>
+        q.eq("userId", userId).eq("boardId", board._id)
       )
 
       .unique();
@@ -127,7 +125,6 @@ export const favorite = mutation({
     return board;
   },
 });
-
 
 export const unFavorite = mutation({
   args: { id: v.id("boards") },
@@ -150,7 +147,6 @@ export const unFavorite = mutation({
       .query("userFavorites")
       .withIndex("by_user_board_org", (q) =>
         q.eq("userId", userId).eq("boardId", board._id)
-
       )
       .unique();
 
