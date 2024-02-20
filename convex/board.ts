@@ -48,8 +48,16 @@ export const remove = mutation({
       throw new Error("Not authenticated");
     }
 
-    // todo:Later check to delete only if the user is the author of the board
+    const userId = identity.subject;
+    const existingFavorite = await ctx.db
+      .query("userFavorites")
+      .withIndex("by_user_board", (q) => q.eq("userId", userId).eq("boardId", args.id))
+      .unique();
 
+    if (existingFavorite) {
+      await ctx.db.delete(existingFavorite._id);
+    }
+    
     await ctx.db.delete(args.id);
   },
 });
@@ -78,7 +86,7 @@ export const update = mutation({
   },
 });
 
-export const Favorite = mutation({
+export const favorite = mutation({
   args: { id: v.id("boards"), orgId: v.string() },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -100,9 +108,8 @@ export const Favorite = mutation({
       .withIndex("by_user_board_org", (q) =>
         q
           .eq("userId", userId)
-          // @ts-ignore
           .eq("boardId", board._id)
-          .eq("orgId", board.orgId)
+          .eq("orgId", args.orgId)
       )
 
       .unique();
@@ -121,8 +128,9 @@ export const Favorite = mutation({
   },
 });
 
-export const UnFavorite = mutation({
-  args: { id: v.id("boards"), orgId: v.string() },
+
+export const unFavorite = mutation({
+  args: { id: v.id("boards") },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
 
@@ -140,26 +148,17 @@ export const UnFavorite = mutation({
 
     const existingFavorite = await ctx.db
       .query("userFavorites")
-      .withIndex(
-        "by_user_board_org",
-        (q) =>
-          q
-            .eq("userId", userId)
-            // @ts-ignore
-            .eq("boardId", board._id)
-            .eq("orgId",board.orgId)
+      .withIndex("by_user_board_org", (q) =>
+        q.eq("userId", userId).eq("boardId", board._id)
 
-        // TODO: check if board id is needed
       )
-
       .unique();
 
     if (!existingFavorite) {
-      throw new Error("Favourited board does not found");
+      throw new Error("Board not favorited");
     }
 
     await ctx.db.delete(existingFavorite._id);
-
     return board;
   },
 });

@@ -1,7 +1,6 @@
 import { v } from "convex/values";
 
 import { query } from "./_generated/server";
-import { createGzip } from "zlib";
 
 export const get = query({
   args: {
