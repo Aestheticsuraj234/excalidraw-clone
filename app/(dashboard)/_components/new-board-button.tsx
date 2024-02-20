@@ -27,7 +27,7 @@ export const NewBoardButton = ({ orgId, disabled }: NewBoardButtonProps) => {
     })
     .then((id)=>{
         toast.success("Board created");
-        router.push(`/boards/${id}`)
+        router.push(`/board/${id}`)
         // todo: redirect to the new board/:id
 
     })

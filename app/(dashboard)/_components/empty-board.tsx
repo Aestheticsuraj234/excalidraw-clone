@@ -22,7 +22,7 @@ const EmptyBoard = () => {
     })
     .then((id)=>{
       toast.success("Board Created Successfully");
-      router.push(`/boards/${id}`)
+      router.push(`/board/${id}`)
       // TODO: redirect to the board/:id
     })
     .catch((error)=>{
