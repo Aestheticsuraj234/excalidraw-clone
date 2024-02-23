@@ -3,7 +3,7 @@
 import { Info } from "./info";
 import { Participants } from "./participants";
 import Toolbar from "./toolbar";
-
+import { useSelf } from "@/liveblocks.config";
 interface CanvasProps{
     boardId:string;
 
@@ -11,9 +11,11 @@ interface CanvasProps{
 
 
 export const Canvas = ({boardId}:CanvasProps)=>{
+
+
     return(
         <main className="h-full w-full relative bg-netural-100 touch-none">
-            <Info/>
+            <Info boardId={boardId} />
             <Participants/>
             <Toolbar/>
         </main>
