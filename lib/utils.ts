@@ -69,10 +69,7 @@ const COLORS = [
   "#FF7F50", // Coral
   "#FFA07A", // LightSalmon
   "#FFDAB9", // PeachPuff
-  "#FFF0F5", // LavenderBlush
-  "#FAEBD7", // AntiqueWhite
-  "#FFEFD5", // PapayaWhip
-  "#FFE4B5", // Moccasin
+
   "#FFDEAD", // NavajoWhite
   "#F5DEB3", // Wheat
   "#DEB887", // BurlyWood
@@ -81,28 +78,7 @@ const COLORS = [
   "#F4A460", // SandyBrown
   "#A52A2A", // Brown
   "#CD853F", // Peru
-  "#8B4513", // SaddleBrown
-  "#FAF0E6", // Linen
-  "#FFF5EE", // SeaShell
-  "#F5F5DC", // Beige
-  "#FFE4C4", // Bisque
-  "#FFFAF0", // FloralWhite
-  "#FFFFF0", // Ivory
-  "#FFFFE0", // LightYellow
-  "#FAFAD2", // LightGoldenRodYellow
-  "#FFF8DC", // Cornsilk
-  "#F0FFF0", // HoneyDew
-  "#F5FFFA", // MintCream
-  "#F0FFFF", // Azure
-  "#F0F8FF", // AliceBlue
-  "#F8F8FF", // GhostWhite
-  "#F0F8FF", // AliceBlue
-  "#F5F5F5", // WhiteSmoke
-  "#DCDCDC", // Gainsboro
-  "#D3D3D3", // LightGrey
-  "#C0C0C0", // Silver
-  "#A9A9A9", // DarkGrey
-  "#808080", // Grey
+  "#8B4513", // SaddleBrow
   "#696969", // DimGrey
   "#778899", // LightSlateGrey
   "#708090", // SlateGrey

@@ -11,7 +11,7 @@ import {
 import { Info } from "./info";
 import { Participants } from "./participants";
 import { nanoid } from "nanoid";
-import Toolbar from "./toolbar";
+import {Toolbar} from "./toolbar";
 import {
   useHistory,
   useCanRedo,
@@ -23,6 +23,7 @@ import { CursorsPresence } from "./cursors-presence";
 import { pointerEventToCanvasPoint } from "@/lib/utils";
 import { LiveObject } from "@liveblocks/client";
 import { on } from "events";
+import { LayerPreview } from "./layer-preview";
 
 const MAX_LAYERS = 100;
 
@@ -128,8 +129,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         setCanvasState={setCanvasState}
         canRedo={canRedo}
         canUndo={canUndo}
-        redo={history.undo}
-        undo={history.redo}
+        redo={history.redo}
+        undo={history.undo}
       />
       <svg
         className="h-[100vh] w-[100vw]"
@@ -143,6 +144,14 @@ export const Canvas = ({ boardId }: CanvasProps) => {
             transform: `translateX(${camera.x}px) translateY(${camera.y}px)`,
           }}
         >
+          {layersId.map((layerId)=>(
+            <LayerPreview
+            key={layerId}
+            id={layerId}
+            onLayerPointerDown={()=>{}}
+            selectionColor={"#000000"}
+            />
+          ))}
           <CursorsPresence />
         </g>
       </svg>
