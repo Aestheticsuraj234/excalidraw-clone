@@ -117,4 +117,6 @@ export function cn(...inputs: ClassValue[]) {
 
 
 
-export function connectIdToColor(connectionId:string)
+export function connectionIdToColor(connectionId:number):string{
+  return COLORS[connectionId % COLORS.length];
+}
