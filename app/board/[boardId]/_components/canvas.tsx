@@ -29,6 +29,7 @@ import { LiveObject } from "@liveblocks/client";
 import { on } from "events";
 import { LayerPreview } from "./layer-preview";
 import { SelectionBox } from "./selection-box";
+import { SelectionTools } from "./selection-tools";
 
 const MAX_LAYERS = 100;
 
@@ -287,6 +288,10 @@ if(self.presence.selection.length >0){
         canUndo={canUndo}
         redo={history.redo}
         undo={history.undo}
+      />
+      <SelectionTools
+      camera={camera}
+      setLastUsedColor={setLastUsedColor}
       />
       <svg
         className="h-[100vh] w-[100vw]"
