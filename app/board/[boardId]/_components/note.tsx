@@ -1,8 +1,8 @@
 import {Kalam} from 'next/font/google';
 
 import ContentEditable , {ContentEditableEvent} from 'react-contenteditable';
-import {cn , colorToCss} from "@/lib/utils";
-import { TextLayer } from '@/types/canvas';
+import {cn , colorToCss, getContrastingTextColor} from "@/lib/utils";
+import { NoteLayer } from '@/types/canvas';
 import { useMutation } from '@/liveblocks.config';
 
 const font = Kalam({
@@ -12,7 +12,7 @@ const font = Kalam({
 
 const calculateFontSize = (width:number , height:number)=>{
     const maxFontSize = 96;
-    const scaleFactor = 0.5;
+    const scaleFactor = 0.15;
     const fontSizeBasedOnHeight = height * scaleFactor;
     const fontSizeBasedOnWidth = width * scaleFactor;
 
@@ -20,19 +20,19 @@ const calculateFontSize = (width:number , height:number)=>{
 
 }
 
-interface TextProps{
+interface NoteProps{
     id:string;
-    layer:TextLayer;
+    layer:NoteLayer;
     onPointerDown:(e:React.PointerEvent,id:string)=>void;
     selectionColor?:string;
 }
 
-export const Text = ({
+export const Note = ({
     id,
     layer,
     onPointerDown,
     selectionColor,
-}:TextProps)=>{
+}:NoteProps)=>{
     const {x,y,width,height,fill,value} = layer;
 
     const updateValue = useMutation(({
@@ -56,16 +56,18 @@ export const Text = ({
         onPointerDown={(e)=>onPointerDown(e,id)}
         style={{
             outline:selectionColor ? `1px solid ${selectionColor}` : "none",
+            backgroundColor:fill ? colorToCss(fill) : "#000",
         }}
+        className="shadow-md drop-shadow-xl"
         >
             <ContentEditable
             html={value || ""}
             onChange={handleContentChange}
-            className={cn('h-full w-full flex items-center justify-center text-center drop-shadow-md outline-none',
+            className={cn('h-full w-full flex items-center justify-center text-center  outline-none',
             font.className)}
             style={{
                 fontSize:calculateFontSize(width,height),
-                color:fill ? colorToCss(fill) : "#000",
+                color:fill ? getContrastingTextColor(fill) : "#000",
             }}
             />
         </foreignObject>

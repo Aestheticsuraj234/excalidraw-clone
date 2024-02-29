@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import {
   Camera,
   CanvasMode,
@@ -27,6 +27,7 @@ import { CursorsPresence } from "./cursors-presence";
 import {
   connectionIdToColor,
   findIntersectingLayersWithRectangle,
+  penPointsToPathLayer,
   pointerEventToCanvasPoint,
   resizeBounds,
 } from "@/lib/utils";
@@ -166,6 +167,60 @@ export const Canvas = ({ boardId }: CanvasProps) => {
     }
   }, []);
 
+
+  const continueDrawing = useMutation(( {self,setMyPresence},point:Point, e:React.PointerEvent)=>{
+    const {pencilDraft} = self.presence;
+    if(canvasState.mode !== CanvasMode.Pencil || e.buttons !== 1 || pencilDraft == null){
+      return;
+    }
+
+    setMyPresence({
+      cursor:point,
+      pencilDraft:
+      pencilDraft.length === 1 &&
+      pencilDraft[0][0] === point.x && 
+      pencilDraft[0][1] === point.y
+      ? pencilDraft
+      : [...pencilDraft , [point.x , point.y , e.pressure]]
+    });
+
+  },[canvasState.mode])
+
+
+  const insertPath = useMutation(({storage , self , setMyPresence})=>{
+    const liveLayers = storage.get("layers");
+    const {pencilDraft} = self.presence;
+    if(pencilDraft == null || pencilDraft.length < 2 || liveLayers.size >= MAX_LAYERS){
+      setMyPresence({pencilDraft:null});
+      return;
+    }
+
+    const id = nanoid();
+    liveLayers.set(
+      id,
+      new LiveObject(penPointsToPathLayer(pencilDraft , lastUsedColor))
+    )
+    
+    const liveLayerIds = storage.get("layerIds");
+    liveLayerIds.push(id);
+
+    setMyPresence({pencilDraft:null});
+    setCanvasState({mode:CanvasMode.Pencil});
+
+
+  },[lastUsedColor])
+
+  const startDrawing = useMutation((
+    {setMyPresence},
+    point:Point,
+    pressure:number
+  )=>{
+    setMyPresence({
+      pencilDraft:[[point.x , point.y , pressure]],
+      penColor:lastUsedColor,
+    })
+  },[lastUsedColor])
+
   const resizeSelectedLayer = useMutation(
     ({ storage, self }, point: Point) => {
       if (canvasState.mode !== CanvasMode.Resizing) {
@@ -220,9 +275,12 @@ export const Canvas = ({ boardId }: CanvasProps) => {
       } else if (canvasState.mode === CanvasMode.Resizing) {
         resizeSelectedLayer(current);
       }
+      else if(canvasState.mode === CanvasMode.Pencil){
+        continueDrawing(current , e);;
+      }
       setMyPresence({ cursor: current });
     },
-    [camera, canvasState, resizeSelectedLayer, translateSelectedLayers]
+    [camera, canvasState, resizeSelectedLayer, translateSelectedLayers , continueDrawing , startMultiSelection , updateSelectionNet]
   );
 
   const onPointerLeave = useMutation(({ setMyPresence }) => {
@@ -238,10 +296,16 @@ export const Canvas = ({ boardId }: CanvasProps) => {
       }
 
       // TODO: Add Case For Drawing
+      if(canvasState.mode === CanvasMode.Pencil){}
+      {
+        startDrawing(point , e.pressure);
+        return;
+
+      }
 
       setCanvasState({ origin: point, mode: CanvasMode.Pressing });
     },
-    [camera, canvasState.mode, setCanvasState]
+    [camera, canvasState.mode, setCanvasState , startDrawing]
   );
 
   const onPointerUp = useMutation(
@@ -255,6 +319,8 @@ export const Canvas = ({ boardId }: CanvasProps) => {
         unselectLayer();
 
         setCanvasState({ mode: CanvasMode.None });
+      } else if(canvasState.mode === CanvasMode.Pencil){
+        insertPath();
       } else if (canvasState.mode === CanvasMode.Inserting) {
         insertLayer(canvasState.layerType, point);
       } else {
@@ -264,7 +330,7 @@ export const Canvas = ({ boardId }: CanvasProps) => {
       }
       history.resume();
     },
-    [camera, canvasState, history, insertLayer, unselectLayer]
+    [camera, canvasState, history, insertLayer, unselectLayer , insertPath , setCanvasState ]
   );
 
   const selections = useOthersMapped((other) => other.presence.selection);
@@ -337,17 +403,16 @@ export const Canvas = ({ boardId }: CanvasProps) => {
           ))}
 
           <SelectionBox onResizeHandlePointerDown={onResizeHandlePointerDown} />
-{canvasState.mode === CanvasMode.SelectionNet && canvasState.current != null && 
-<rect
-className="fill-blue-500/5 stroke-blue-500 stroke-1"
-x={Math.min(canvasState.origin.x, canvasState.current.x)}
-y={Math.min(canvasState.origin.y, canvasState.current.y)}
-width={Math.abs(canvasState.origin.x - canvasState.current.x)}
-height={Math.abs(canvasState.origin.y - canvasState.current.y)}
-
-/>
-
-}
+          {canvasState.mode === CanvasMode.SelectionNet &&
+            canvasState.current != null && (
+              <rect
+                className="fill-blue-500/5 stroke-blue-500 stroke-1"
+                x={Math.min(canvasState.origin.x, canvasState.current.x)}
+                y={Math.min(canvasState.origin.y, canvasState.current.y)}
+                width={Math.abs(canvasState.origin.x - canvasState.current.x)}
+                height={Math.abs(canvasState.origin.y - canvasState.current.y)}
+              />
+            )}
           <CursorsPresence />
         </g>
       </svg>
