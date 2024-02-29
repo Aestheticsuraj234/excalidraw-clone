@@ -13,7 +13,7 @@ import {
   SendToBack,
   Trash2,
 } from "lucide-react";
-import { UseDeleteLayers } from "@/hook/use-delete-layers";
+import { useDeleteLayers } from "@/hook/use-delete-layers";
 
 interface SelectionToolsProps {
   camera: Camera;
@@ -73,7 +73,7 @@ export const SelectionTools = memo(
         }
 },[selection])
 
-    const deleteLayers = UseDeleteLayers();
+    const deleteLayers = useDeleteLayers();
     const selectionBounds = useSelectionBounds();
 
     if (!selectionBounds) {

@@ -1,6 +1,6 @@
 import {useSelf , useMutation} from '@/liveblocks.config';
 
-export const UseDeleteLayers = ()=>{
+export const useDeleteLayers = ()=>{
     const selection = useSelf((me)=>me.presence.selection);
     return useMutation(({storage,setMyPresence})=>{
         const liveLayers = storage.get("layers");
